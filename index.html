@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../img/icon.png">
+    <title>整合版 - 小滴创业服务平台</title>
+    <style>
+        /* 全局通用样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft Yahei", sans-serif;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .banner img {
+            width: 100%;
+            display: block;
+        }
+
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            z-index: 999;
+        }
+        .bottom-nav .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+        .bottom-nav .nav-item img {
+            width: 25px;
+            height: 25px;
+        }
+        .bottom-nav .nav-item p {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #666;
+        }
+        .bottom-nav .nav-item.active p {
+            color: #007bff;
+        }
+
+        /* 各模块容器样式（默认隐藏） */
+        .page-container {
+            display: none;
+            padding-bottom: 70px; /* 给底部导航留空间 */
+        }
+        .page-container.active {
+            display: block;
+        }
+
+        /* 登录页面样式 */
+        .login-box {
+            padding: 30px;
+            text-align: center;
+        }
+        .login-box .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #ccc;
+            margin: 0 auto 20px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .login-box button {
+            width: 100%;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* 小滴服务页面样式 */
+        .menu-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 15px;
+            justify-content: space-around;
+        }
+        .menu-item {
+            width: 30%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .menu-item .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon.red { background-color: #eb5757; }
+        .icon.orange { background-color: #f2994a; }
+        .icon.green { background-color: #6fcf97; }
+        .icon.blue { background-color: #2d9cdb; }
+        .icon.yellow { background-color: #f2c94c; }
+        .icon.purple { background-color: #9b51e0; }
+        .icon.light-purple { background-color: #bb6bd9; }
+        .icon.blue-lock { background-color: #56ccf2; }
+        .icon.teal { background-color: #40c9c6; }
+        .menu-item .icon img {
+            width: 30px;
+            height: 30px;
+        }
+        .menu-item p {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* 创业项目页面样式 */
+        .tab {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            background-color: white;
+        }
+        .tab ul {
+            width: 100%;
+            display: flex;
+        }
+        .tab li {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            list-style: none;
+            cursor: pointer;
+        }
+        .tab li.active {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+        .tab-content {
+            padding: 15px;
+            background-color: white;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* 服务流程页面样式 */
+        .flow-item {
+            display: flex;
+            margin: 10px 0;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .flow-item .num {
+            background: #333;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .flow-item .content {
+            flex: 1;
+            background: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .flow-item:nth-child(2) .num { background: #666; }
+        .flow-item:nth-child(2) .content { background: #666; }
+        .flow-item:nth-child(3) .num { background: #888; }
+        .flow-item:nth-child(3) .content { background: #888; }
+        .flow-item:nth-child(4) .num { background: #999; }
+        .flow-item:nth-child(4) .content { background: #999; }
+        .flow-item:nth-child(5) .num { background: #aaa; }
+        .flow-item:nth-child(5) .content { background: #aaa; }
+        .flow-item:nth-child(6) .num { background: #bbb; }
+        .flow-item:nth-child(6) .content { background: #bbb; }
+
+        /* 平台风采页面样式 */
+        .fengcai-content {
+            padding: 15px;
+        }
+        .fengcai-content h2 {
+            color: red;
+            margin-bottom: 10px;
+        }
+        .fengcai-content h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .fengcai-content p {
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        /* 我的小滴页面样式 */
+        .mine-header {
+            text-align: center;
+            padding: 20px 0;
+            background: url(../img/bg.png) no-repeat center;
+            background-size: cover;
+            color: white;
+        }
+        .mine-header .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #ccc;
+            margin: 0 auto;
+        }
+        .mine-header .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        .mine-header p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .mine-header button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .mine-list {
+            padding: 15px;
+        }
+        .mine-list .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #fff;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .mine-list .item img {
+            width: 30px;
+            margin-right: 10px;
+        }
+        .mine-list .item span {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="login-page" class="page-container active">
+        <header>登录</header>
+        <div class="login-box">
+            <div class="avatar">
+                <img src="../img/avatar.png" alt="头像" style="width:100%; height:100%; border-radius:50%;">
+            </div>
+            <input type="text" value="admin" readonly>
+            <input type="password" value="*****" readonly>
+            <button onclick="switchPage('service-page')">登录</button>
+        </div>
+    </div>
+
+    <!-- 小滴服务页面 -->
+    <div id="service-page" class="page-container">
+        <header>小滴服务</header>
+        <div class="banner">
+            <img src="../img/banner1.png" alt="鸿鑫互联 万众创业联合上市计划">
+        </div>
+        <div class="menu-container">
+            <div class="menu-item">
+                <div class="icon red">
+                    <img src="../img/index1.png" alt="企业项目">
+                </div>
+                <p>企业项目</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon orange">
+                    <img src="../img/index2.png" alt="平台风采">
+                </div>
+                <p>平台风采</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon green">
+                    <img src="../img/index3.png" alt="报名流程">
+                </div>
+                <p>报名流程</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon blue">
+                    <img src="../img/index4.png" alt="客户管理">
+                </div>
+                <p>客户管理</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon yellow">
+                    <img src="../img/index5.png" alt="账务管理">
+                </div>
+                <p>账务管理</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon purple">
+                    <img src="../img/index6.png" alt="新闻公告">
+                </div>
+                <p>新闻公告</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon light-purple">
+                    <img src="../img/index7.png" alt="工程案例">
+                </div>
+                <p>工程案例</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon blue-lock">
+                    <img src="../img/index8.png" alt="修改密码">
+                </div>
+                <p>修改密码</p>
+            </div>
+            <div class="menu-item">
+                <div class="icon teal">
+                    <img src="../img/index9.png" alt="会员注册">
+                </div>
+                <p>会员注册</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创业项目页面 -->
+    <div id="chuangye-page" class="page-container">
+        <header>创业项目</header>
+        <div class="tab">
+            <ul>
+                <li class="active">钻石创业者</li>
+                <li>金牌创业者</li>
+                <li>银牌创业者</li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-panel active">
+                <img src="../img/banner2.png" alt="创业项目" style="width:100%;">
+                <h3 style="text-align: center;">服务内容</h3>
+                <div style="display:flex; flex-wrap: wrap; justify-content: space-around; margin:15px 0;">
+                    <div style="text-align:center;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:#40c9c6;color:white;display:flex;align-items:center;justify-content:center;">工程行业学院</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:#f2c94c;color:white;display:flex;align-items:center;justify-content:center;">市场营销学院</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:#eb5757;color:white;display:flex;align-items:center;justify-content:center;">运营管理学院</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:#2d9cdb;color:white;display:flex;align-items:center;justify-content:center;">渠道建设学院</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:#bb6bd9;color:white;display:flex;align-items:center;justify-content:center;">招商路演学院</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:80px;height:80px;border-radius:50%;background:#eb5757;color:white;display:flex;align-items:center;justify-content:center;">会议营销学院</div>
+                    </div>
+                </div>
+                <p style="text-align:center; color:#666;">提供以上两个学院的技术支持、咨询服务、课件学习等内容</p>
+
+                <h3 style="text-align: center;">创业者享受的回报收益</h3>
+                <div style="display:flex; justify-content: space-around; margin:15px 0;">
+                    <div style="text-align:center;">
+                        <div style="width:100px;height:120px;border:2px dashed #2d9cdb;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                            <span style="background:#f59e0b;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;">1</span>
+                            <p>短期收益<br>10万*N（10人）*50%=50万</p>
+                        </div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:100px;height:120px;border:2px dashed #2d9cdb;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                            <span style="background:#f59e0b;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;">2</span>
+                            <p>中长期收益<br>股权</p>
+                        </div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:100px;height:120px;border:2px dashed #2d9cdb;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                            <span style="background:#f59e0b;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;">3</span>
+                            <p>3年内所承包工程<br>不用上缴利润</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p>X:渠道可享受有的股份额度;</p>
+                <p>z:历年渠道全部各方业绩流水总额累计;</p>
+                <p>b:宏鑫互联网集团所拥有的上市或者充足公司纵谷本数;</p>
+                <p>q:宏鑫互联网集团上市总股本数的20%;</p>
+
+                <h3 style="text-align: center;">获得收益条件</h3>
+                <p>N≥10人;;</p>
+                <p>②业绩流水≥1.2亿。;</p>
+                <p>当满足以上2个条件时，钻石创业者才能取得期权。</p>
+                <p>注:上面的y、z为财务数据，由财务部门按期提供，录入即可。</p>
+            </div>
+            <div class="tab-panel">
+                <p style="text-align:center; padding:50px 0;">金牌创业者相关内容</p>
+            </div>
+            <div class="tab-panel">
+                <p style="text-align:center; padding:50px 0;">银牌创业者相关内容</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 服务流程页面 -->
+    <div id="flow-page" class="page-container">
+        <header>服务流程</header>
+        <div class="banner">
+            <img src="../img/banner3.png" alt="服务流程">
+        </div>
+        <div style="padding:15px;">
+            <div class="flow-item">
+                <div class="num">1</div>
+                <div class="content">登记基本信息<br>请输入您的姓名、电话、邮箱等信息，方便进一步合作和客服回访。</div>
+            </div>
+            <div class="flow-item">
+                <div class="num">2</div>
+                <div class="content">客户回访<br>工作人员会及时与您联系，沟通您想了解的细节。</div>
+            </div>
+            <div class="flow-item">
+                <div class="num">3</div>
+                <div class="content">线上签署合作协议<br>达成合作共识，预祝合作愉快。</div>
+            </div>
+            <div class="flow-item">
+                <div class="num">4</div>
+                <div class="content">快递文本<br>给您快递合同文本，为合作提供真实有利保障。</div>
+            </div>
+            <div class="flow-item">
+                <div class="num">5</div>
+                <div class="content">履行合同<br>携您手共同努力，合作成功。</div>
+            </div>
+            <div class="flow-item">
+                <div class="num">6</div>
+                <div class="content">后续服务<br>提供完善、到位的后续跟踪服务，期待再次合作。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 平台风采页面 -->
+    <div id="fengcai-page" class="page-container">
+        <header>平台风采</header>
+        <div class="banner">
+            <img src="../img/banner4.png" alt="平台风采">
+        </div>
+        <div class="fengcai-content">
+            <h2>公司简介</h2>
+            <h3>华杉科技（北京）有限公司</h3>
+            <p>华杉科技（北京）有限公司一直秉承“在高薪和经验的路上，我们只做行业第一”，致力于为整个互联网科技行业输送高级技术人才、做好每一款外包项目。</p>
+            <p>华杉科技（北京）有限公司是一家既专注于培养高级IT技术人才，为学员提供定制化IT职业规划方案及意见咨询服务，又是国内领先的智能手机软件外包服务商。公司由原东方爱智技术总监，原58同城技术总监，河南大学软件学院优秀毕业生共同创立。</p>
+            <p>华杉科技（北京）有限公司拥有业内知名的教研团队和雄厚的课程研发能力，课程的快速迭代时刻紧跟当今较为流行的前沿技术、不同行业的外包项目作为支撑，强有力的保证了学员的核心竞争力。强竞争力的一线技术人员和完善的外包服务流程充分保证了每一款项目的顺利执行。</p>
+        </div>
+    </div>
+
+    <!-- 我的小滴页面 -->
+    <div id="mine-page" class="page-container">
+        <header>我的小滴</header>
+        <div class="mine-header">
+            <div class="avatar">
+                <img src="../img/head.png" alt="头像">
+            </div>
+            <p>华杉科技</p>
+            <button onclick="switchPage('login-page')">退出登录</button>
+        </div>
+        <div class="mine-list">
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="我的客户">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="我的客户">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="我的客户">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="我的客户">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="我的客户">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+            <div class="item">
+                <div style="display:flex; align-items:center;">
+                    <img src="../img/gr_1.png" alt="我的客户">
+                    <span>我的客户</span>
+                </div>
+                <span>></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="switchPage('service-page')">
+            <img src="../img/nav10.png" alt="小滴服务">
+            <p>小滴服务</p>
+        </div>
+        <div class="nav-item" onclick="switchPage('chuangye-page')">
+            <img src="../img/nav20.png" alt="创业项目">
+            <p>创业项目</p>
+        </div>
+        <div class="nav-item" onclick="switchPage('flow-page')">
+            <img src="../img/nav30.png" alt="服务流程">
+            <p>服务流程</p>
+        </div>
+        <div class="nav-item" onclick="switchPage('fengcai-page')">
+            <img src="../img/nav40.png" alt="平台风采">
+            <p>平台风采</p>
+        </div>
+        <div class="nav-item" onclick="switchPage('mine-page')">
+            <img src="../img/nav50.png" alt="我的小滴">
+            <p>我的小滴</p>
+        </div>
+    </nav>
+
+    <script>
+        // 页面切换函数
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            const allPages = document.querySelectorAll('.page-container');
+            allPages.forEach(page => {
+                page.classList.remove('active');
+            });
+            // 显示目标页面
+            const targetPage = document.getElementById(pageId);
+            targetPage.classList.add('active');
+            
+            // 更新底部导航激活状态
+            const allNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+            allNavItems.forEach(item => {
+                item.classList.remove('active');
+                // 匹配导航项和页面
+                if (item.onclick.toString().includes(pageId)) {
+                    item.classList.add('active');
+                }
+            });
+
+            // 登录页特殊处理（底部导航隐藏）
+            if (pageId === 'login-page') {
+                document.querySelector('.bottom-nav').style.display = 'none';
+            } else {
+                document.querySelector('.bottom-nav').style.display = 'flex';
+            }
+        }
+
+        // 创业项目tab切换逻辑
+        const tabLi = document.querySelectorAll('.tab li');
+        const tabPanel = document.querySelectorAll('.tab-panel');
+        tabLi.forEach((li, index) => {
+            li.addEventListener('click', () => {
+                tabLi.forEach(item => item.classList.remove('active'));
+                tabPanel.forEach(panel => panel.classList.remove('active'));
+                li.classList.add('active');
+                tabPanel[index].classList.add('active');
+            });
+        });
+
+        // 初始化底部导航样式（登录页隐藏）
+        window.onload = function() {
+            if (document.getElementById('login-page').classList.contains('active')) {
+                document.querySelector('.bottom-nav').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
